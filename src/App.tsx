@@ -3,10 +3,21 @@ import TableCard from "./component/TableCard";
 import { IDataProduct, IProductTHeader } from "./types/Product.types";
 import { ButtonDangerCard, ButtonEdit } from "./component/ButtonCard";
 import { useProduct } from "./hook/ProductHook";
+import { api } from "./interceptors/api";
+import LayoutCard from "./component/LayoutCard";
+import './index.css'
 
 const App: React.FC = () => {
-  const [page, setPage, perPage, setPerPage, pagination, loading, products] =
-    useProduct();
+  const [
+    page,
+    setPage,
+    perPage,
+    setPerPage,
+    pagination,
+    loading,
+    products,
+    setProduct,
+  ] = useProduct();
 
   const column: IProductTHeader[] = useMemo(
     () => [
@@ -33,7 +44,7 @@ const App: React.FC = () => {
               />
               <ButtonDangerCard
                 label="Delete"
-                handleOnClick={(e) => handleClick(e, row)}
+                handleOnClick={(e) => handleDelete(e, row.id)}
               />
             </div>
           );
@@ -54,7 +65,7 @@ const App: React.FC = () => {
   const handlePrevClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.preventDefault();
-      setPage(page - Number(1));
+      setPage(page - 1);
     },
     [page]
   );
@@ -62,7 +73,7 @@ const App: React.FC = () => {
   const handleNextClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.preventDefault();
-      setPage(page + Number(1));
+      setPage(page + 1);
     },
     [page]
   );
@@ -84,10 +95,9 @@ const App: React.FC = () => {
   );
 
   const handlePerPage = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>): void => {
-      e.preventDefault();
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
       setPage(1);
-      setPerPage(Number(e.currentTarget.value));
+      setPerPage(parseInt(e.target.value));
     },
     []
   );
@@ -96,8 +106,24 @@ const App: React.FC = () => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
 
+  const handleDelete = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    id: number
+  ) => {
+    e.preventDefault();
+    try {
+      await api.delete(`http://localhost:8000/api/delete-product/${id}`);
+      setProduct((prevProducts) =>
+        prevProducts.filter((product) => product.id !== id)
+      );
+
+      alert("Sukses");
+    } catch (error) {
+      alert(error);
+    }
+  };
   return (
-    <>
+    <LayoutCard>
       {loading ? (
         <p>Mohon tunggu ...</p>
       ) : (
@@ -113,7 +139,8 @@ const App: React.FC = () => {
           filter_per_page={handlePerPage}
         />
       )}
-    </>
+
+    </LayoutCard>
   );
 };
 
