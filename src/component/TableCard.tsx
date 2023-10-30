@@ -1,17 +1,18 @@
 import React, { useMemo } from "react";
-import {
-  IDataProduct,
-  IProduct,
-  IProductTHeader,
-} from "../types/Product.types";
 import { IoChevronBack, IoChevronForwardOutline } from "react-icons/io5";
 import { HiChevronDoubleRight, HiChevronDoubleLeft } from "react-icons/hi2";
 
+type TableColumn<T> = {
+  key: keyof T;
+  label: string;
+  formatter?: (item: T) => React.ReactNode;
+};
+
 type TData = {
-  columns: IProductTHeader[];
-  data: IDataProduct[];
+  columns: TableColumn<any>[];
+  data: any[];
   per_page: number;
-  pagination_data?: IProduct;
+  pagination_data?: any;
   pagination_next?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   pagination_prev?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   pagination_last?: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -33,33 +34,35 @@ const TableCard: React.FC<TData> = ({
   const perPage_filter = useMemo(() => [10, 20, 50, 100], []);
 
   return (
-    <div className="container-fluid">
-      <table className="table">
-        <thead>
-          <tr>
-            {columns.map((col) => {
-              return <th key={col.key}>{col.label}</th>;
+    <>
+      <div className="table-responsive">
+        <table className="table">
+          <thead>
+            <tr>
+              {columns.map((col) => {
+                return <th key={String(col.key)}>{col.label}</th>;
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            {data?.map((item) => {
+              return (
+                <tr key={item.id}>
+                  {columns.map((c) => {
+                    return (
+                      <td key={String(c.key)}>
+                        {c.formatter
+                          ? c.formatter(item)
+                          : item[c.key]}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
             })}
-          </tr>
-        </thead>
-        <tbody>
-          {data?.map((item) => {
-            return (
-              <tr key={item.id}>
-                {columns.map((c) => {
-                  return (
-                    <td key={c.key}>
-                      {c.formatter
-                        ? c.formatter(item)
-                        : item[c.key as keyof IDataProduct]}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
       {pagination_data ? (
         <div className="d-flex flex-row column-gap-1">
           <div className="d-flex column-gap-1">
@@ -123,7 +126,7 @@ const TableCard: React.FC<TData> = ({
           </div>
         </div>
       ) : null}
-    </div>
+    </>
   );
 };
 

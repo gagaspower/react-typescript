@@ -12,7 +12,7 @@ const LayoutCard: FC<IContent> = ({ children }) => {
     const [sidebarActive, _, toggleHandler] = useToggle();
 
     return (
-        <div className='d-flex flex-row'>
+        <div className='d-flex flex-row position-relative'>
             {/* sidebar */}
             <aside className={`sidebar ${sidebarActive ? 'active' : ''}`}>
                 <div className="sidebar-brand">
@@ -33,7 +33,7 @@ const LayoutCard: FC<IContent> = ({ children }) => {
             </aside>
 
             {/* main content */}
-            <main className='d-flex flex-grow-1 flex-column'>
+            <main className="d-flex flex-grow-1 flex-column">
                 {/* navbar */}
                 <nav className="navbar navbar-expand-lg bg-white shadow-sm">
                     <div className="container-fluid">
@@ -47,7 +47,7 @@ const LayoutCard: FC<IContent> = ({ children }) => {
                 </nav>
 
                 {/* dinamyc content */}
-                <section className="content">
+                <section className="content p-4 overflow-hidden">
                     {children}
                 </section>
             </main>
